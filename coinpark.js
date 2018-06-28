@@ -835,12 +835,12 @@ $.event.special.keydown._default = function (evt){
 /* 钱多币少的时候，就先买再卖，buyacc调低，甚至到0;sell acc调高 */
 /* 钱少币多的时候，就先卖再买，buyacc调高;sellacc调低，甚至到0 */
 /* TODO::这里可以加个比例变量自动计算 */
-var configBuyAccumulate = 0.1;
-var configSellAccumulate = 0.1;
+var configBuyAccumulate = 0.6;
+var configSellAccumulate = 0.6;
 /* 如果长期没有成交，而且之前累积的量超过以下阈值，则撤单重建 */
 /* 超过三倍入场时的Acc，或者超过此阈值，都将撤单，请理解这一点。 */
-var configBuyResetAccumulate = 0.3;
-var configSellResetAccumulate = 0.3;
+var configBuyResetAccumulate = 2.0;
+var configSellResetAccumulate = 2.0;
 /* 设置买入卖出最小单位，usd是10$，eth是0.01。其他币种的话可能需要调整 */
 var configBuyUsdLimit = 10.0;
 var configSellCoinLimit = 0.01;
@@ -955,10 +955,23 @@ function sendSellOrder(){
     $("div ul li button:eq(1)").click();
 }
 
+var reload_times = 0;
+function reload(){ /* 这个功能为了避免coinpark.cc不喂数据的bug */
+    if(0 == (reload_times % 2)){
+        window.history.back();
+    }else{
+        window.history.forward();
+    }
+    reload_times ++;
+}
+
 var counter = 0;
 function trade(){
     console.log("trade @ round %d", counter);
     counter ++;
+    if((counter % 30) == 0 || (counter % 30) == 1){/* 150s 重新load一次 */
+        reload();
+    }
     updateMarketDatas();
     /* 1.检查过期单,即前面排队的单累计超过三倍Accumulate，撤销 */
     var closed = false;
@@ -1057,6 +1070,13 @@ function trade(){
 
 /*
    使用说明：
+
+   前置条件:
+   因为coinpark.cc的bug,网页经常不能及时刷新数据,为了避免机器人长期闲置,所以加上了自动重新刷新页面的功能.
+   这个需要使用者在在初始化机器人前,连续两次进入同一个交易品种的页面.
+   比如说当前要交易ETHUSD,进入交易窗口之后,再次手工点击左上的品种下拉菜单中的ETHUSD.
+   后续机器人会定期重新向前向后浏览,来强行刷新交易界面.
+
    1. firefox浏览器，右键点击“查看元素”，打开浏览器开发者工具
 
    2. 点击“控制台”，在其最下方输入以下----之间的代码：
