@@ -967,7 +967,7 @@ var counter = 0;
 function trade(){
     console.log("trade @ round %d", counter);
     counter ++;
-    if(counter % 30) == 0){/* 150s 重新load一次 */
+    if((counter % 30) == 0){/* 150s 重新load一次 */
         reload();
     }
     updateMarketDatas();
