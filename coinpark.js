@@ -957,11 +957,9 @@ function sendSellOrder(){
 
 var reload_times = 0;
 function reload(){ /* 这个功能为了避免coinpark.cc不喂数据的bug */
-    if(0 == (reload_times % 2)){
-        window.history.back();
-    }else{
-        window.history.forward();
-    }
+    console.log("force reload trade page");
+    window.history.back();
+    window.history.forward();
     reload_times ++;
 }
 
@@ -969,7 +967,7 @@ var counter = 0;
 function trade(){
     console.log("trade @ round %d", counter);
     counter ++;
-    if((counter % 30) == 0 || (counter % 30) == 1){/* 150s 重新load一次 */
+    if(counter % 30) == 0){/* 150s 重新load一次 */
         reload();
     }
     updateMarketDatas();
@@ -1074,7 +1072,7 @@ function trade(){
    前置条件:
    因为coinpark.cc的bug,网页经常不能及时刷新数据,为了避免机器人长期闲置,所以加上了自动重新刷新页面的功能.
    这个需要使用者在在初始化机器人前,连续两次进入同一个交易品种的页面.
-   比如说当前要交易ETHUSD,进入交易窗口之后,再次手工点击左上的品种下拉菜单中的ETHUSD.
+   比如说当前要交易ETHUSD,进入交易窗口之后,再次手工点击左上的品种下拉菜单中的ETHUSD,多点击几次也可以.
    后续机器人会定期重新向前向后浏览,来强行刷新交易界面.
 
    1. firefox浏览器，右键点击“查看元素”，打开浏览器开发者工具
