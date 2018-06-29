@@ -959,7 +959,7 @@ var reload_times = 0;
 function reload(){ /* 这个功能为了避免coinpark.cc不喂数据的bug */
     console.log("force reload trade page");
     window.history.back();
-    window.history.forward();
+    setTimeout("window.history.forward()",500);
     reload_times ++;
 }
 
@@ -989,6 +989,7 @@ function trade(){
                 }
                 accVol += buyVols[idx];
             }
+            console.log("buy accVol is %f", accVol);
             if(accVol >= configBuyResetAccumulate || accVol >= 3 * configBuyAccumulate){
                 $(this).click();/* 关单 */
                 closed = true;
